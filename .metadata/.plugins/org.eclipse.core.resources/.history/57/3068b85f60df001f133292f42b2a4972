@@ -1,0 +1,75 @@
+package canvas;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.io.File;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+public class JunctionBoxMouseListener extends MouseAdapter {
+    private Canvas canvas;
+    private boolean isDrawing = false;
+
+    public JunctionBoxMouseListener(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
+    public void setDrawing(boolean drawing) {
+        this.isDrawing = drawing;
+    }
+
+    public boolean isDrawing() {
+        return isDrawing;
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (isDrawing && e.getButton() == MouseEvent.BUTTON1) {
+            int x = e.getX();
+            int y = e.getY();
+
+            int boxWidth = 100; // Width of the JunctionBox
+            int boxHeight = 50; // Height of the JunctionBox
+
+            // Check for overlap
+            if (isOverlappingExistingJunctionBox(x, y, boxWidth, boxHeight)) {
+                Toolkit.getDefaultToolkit().beep();
+            } else {
+                // Open a file chooser dialog to select an image
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Select an image for the JunctionBox");
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", "jpg", "png", "gif", "bmp");
+                fileChooser.addChoosableFileFilter(filter);
+
+                int result = fileChooser.showOpenDialog(canvas);
+                String imagePath = null;
+
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    imagePath = selectedFile.getAbsolutePath();
+                }
+
+                // Create the JunctionBox with or without the selected image
+                JunctionBox junctionBox = new JunctionBox(x, y, boxWidth, boxHeight, imagePath);
+                canvas.addJunctionBox(junctionBox);
+            }
+            // Keep drawing mode active
+        }
+    }
+
+    // Method to check for overlap with existing JunctionBoxes
+    private boolean isOverlappingExistingJunctionBox(int x, int y, int width, int height) {
+        Rectangle newBoxBounds = new Rectangle(x, y, width, height);
+        for (JunctionBox junctionBox : canvas.getJunctionBoxes()) {
+            Rectangle existingBoxBounds = new Rectangle(
+                junctionBox.getX(), junctionBox.getY(),
+                junctionBox.getWidth(), junctionBox.getHeight()
+            );
+            if (newBoxBounds.intersects(existingBoxBounds)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

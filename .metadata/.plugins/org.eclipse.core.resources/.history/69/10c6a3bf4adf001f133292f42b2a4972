@@ -1,0 +1,67 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class JunctionBox {
+    private int x, y, width, height;  // Position and size of the rectangle
+    private ArrayList<JunctionPoint> junctionPoints;  // List to store the four junction points
+
+    public JunctionBox(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.junctionPoints = new ArrayList<>();
+
+        // Calculate the positions of the four junction points
+        int topX = x + width / 2;
+        int topY = y;
+        int rightX = x + width;
+        int rightY = y + height / 2;
+        int bottomX = x + width / 2;
+        int bottomY = y + height;
+        int leftX = x;
+        int leftY = y + height / 2;
+
+        // Add the junction points to the list
+        junctionPoints.add(new JunctionPoint(topX, topY));
+        junctionPoints.add(new JunctionPoint(rightX, rightY));
+        junctionPoints.add(new JunctionPoint(bottomX, bottomY));
+        junctionPoints.add(new JunctionPoint(leftX, leftY));
+    }
+
+    // Method to draw the JunctionBox and the JunctionPoints (if needed for later)
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);  // Color for the rectangle border
+        g.drawRect(x, y, width, height);  // Draw the rectangle
+
+        // Draw the junction points
+        for (JunctionPoint point : junctionPoints) {
+            point.draw(g);  // Draw each junction point
+        }
+    }
+
+    // Getters for the position and size
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    // Get the list of junction points (useful for later if needed)
+    public ArrayList<JunctionPoint> getJunctionPoints() {
+        return junctionPoints;
+    }
+}
+

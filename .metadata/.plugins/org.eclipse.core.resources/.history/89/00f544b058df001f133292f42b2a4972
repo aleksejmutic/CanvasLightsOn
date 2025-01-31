@@ -1,0 +1,32 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Wire {
+    private ArrayList<Point> points;
+
+    public Wire(Point startPoint) {
+        points = new ArrayList<>();
+        points.add(startPoint);
+    }
+
+    public void addPoint(Point point) {
+        points.add(point);
+    }
+
+    public void updateLastPoint(Point point) {
+        if (!points.isEmpty()) {
+            points.set(points.size() - 1, point);
+        }
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point p1 = points.get(i);
+            Point p2 = points.get(i + 1);
+            g.drawLine(p1.x, p1.y, p2.x, p2.y);
+        }
+    }
+}

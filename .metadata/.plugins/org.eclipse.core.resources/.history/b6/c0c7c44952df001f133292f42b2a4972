@@ -1,0 +1,25 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Wire {
+    private ArrayList<Line2D> segments;  // List to store wire segments
+    private JunctionPoint startJunction;
+    private JunctionPoint endJunction;
+
+    public Wire() {
+        segments = new ArrayList<>();
+    }
+
+    public void addSegment(JunctionPoint start, JunctionPoint end) {
+        segments.add(new Line2D.Double(start.getX(), start.getY(), end.getX(), end.getY()));
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        for (Line2D segment : segments) {
+            g.drawLine((int) segment.getX1(), (int) segment.getY1(), (int) segment.getX2(), (int) segment.getY2());
+        }
+    }
+}

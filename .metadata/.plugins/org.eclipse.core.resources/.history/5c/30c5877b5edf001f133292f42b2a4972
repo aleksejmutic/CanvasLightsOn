@@ -1,0 +1,48 @@
+package canvas;
+
+import java.awt.*;
+import java.awt.event.*;
+
+public class JunctionBoxDragListener extends MouseAdapter {
+    private Canvas canvas;
+    private JunctionBox selectedBox = null;
+    private Point offset;
+
+    public JunctionBoxDragListener(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (!canvas.isInDrawingMode()) {
+            Point clickPoint = e.getPoint();
+            for (JunctionBox box : canvas.getJunctionBoxes()) {
+                if (box.contains(clickPoint)) {
+                    selectedBox = box;
+                    offset = new Point(clickPoint.x - box.getX(), clickPoint.y - box.getY());
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        if (selectedBox != null) {
+            int newX = e.getX() - offset.x;
+            int newY = e.getY() - offset.y;
+
+            selectedBox.setPosition(newX, newY);
+
+            // Update connected wires
+            canvas.updateConnectedWires(selectedBox);
+
+            canvas.repaint();
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        selectedBox = null;
+    }
+}

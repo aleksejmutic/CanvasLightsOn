@@ -1,0 +1,35 @@
+package canvas;
+
+import java.awt.*;
+import java.awt.event.*;
+
+public class JunctionBoxMouseListener extends MouseAdapter {
+    private Canvas canvas;  // Reference to the Canvas
+    private boolean isDrawing = false;  // Flag to check if we are in drawing mode
+
+    public JunctionBoxMouseListener(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
+    // Method to set the drawing mode (called by the button click)
+    public void setDrawing(boolean drawing) {
+        this.isDrawing = drawing;
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        // Only draw when left-clicking (BUTTON1) and in drawing mode
+        if (e.getButton() == MouseEvent.BUTTON1 && isDrawing) {
+            int x = e.getX();
+            int y = e.getY();
+
+            // Create and add the JunctionBox at the clicked position
+            JunctionBox junctionBox = new JunctionBox(x, y, 100, 50);  // Example size (100x50)
+            canvas.addJunctionBox(junctionBox);  // Add it to the canvas to be drawn
+
+            // We don't reset the drawing mode after each click now
+            // The mode will remain active to allow continuous drawing
+        }
+    }
+}
+

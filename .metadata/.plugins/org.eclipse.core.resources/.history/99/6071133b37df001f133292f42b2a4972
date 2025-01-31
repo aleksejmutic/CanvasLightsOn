@@ -1,0 +1,58 @@
+package canvas;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class CircuitEditor extends JFrame {
+    
+    public CircuitEditor() {
+        setTitle("Circuit Editor");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        
+        // Create top panel (with buttons)
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Align buttons to the left
+        
+        JButton drawJunctionBoxButton = new JButton("Draw Junction Box");
+        JButton drawConsumerButton = new JButton("Draw Consumer");
+        JButton drawCableButton = new JButton("Draw Cable");
+        
+        // Create the drawing panel
+        DrawingPanel drawingPanel = new DrawingPanel();
+        JunctionBoxListener junctionBoxListener = new JunctionBoxListener(drawingPanel);
+        
+        // Add the listener to the drawing panel
+        drawingPanel.addMouseListener(junctionBoxListener);
+        
+        // Button action to start drawing the junction box
+        drawJunctionBoxButton.addActionListener(e -> {
+            junctionBoxListener.setDrawJunctionBox(true);
+            // Change the cursor to a custom one (crosshair)
+            drawingPanel.setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR)); // Crosshair to show drawing mode
+        });
+        
+        // Restore cursor when not in drawing mode
+        drawConsumerButton.addActionListener(e -> {
+            junctionBoxListener.setDrawJunctionBox(false);
+            drawingPanel.setCursor(Cursor.getDefaultCursor()); // Restore default cursor
+        });
+
+        topPanel.add(drawJunctionBoxButton);
+        topPanel.add(drawConsumerButton);
+        topPanel.add(drawCableButton);
+        
+        // Layout: topPanel at the NORTH, drawingPanel at the CENTER
+        setLayout(new BorderLayout());
+        add(topPanel, BorderLayout.NORTH);
+        add(drawingPanel, BorderLayout.CENTER);
+    }
+}

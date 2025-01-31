@@ -1,0 +1,32 @@
+package canvas;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class JunctionBoxListener extends MouseAdapter {
+    private DrawingPanel drawingPanel;
+    private boolean drawJunctionBox;
+
+    public JunctionBoxListener(DrawingPanel drawingPanel) {
+        this.drawingPanel = drawingPanel;
+        this.drawJunctionBox = false;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (drawJunctionBox) {
+            // When the canvas is clicked, create a new junction box
+            int x = e.getX();
+            int y = e.getY();
+            JunctionBox junctionBox = new JunctionBox(x, y, 100, 200); // Width and height can be parameters
+            
+            // Add the junction box to the drawing panel
+            drawingPanel.addJunctionBox(junctionBox);
+            drawingPanel.repaint(); // Redraw the canvas
+        }
+    }
+
+    public void setDrawJunctionBox(boolean drawJunctionBox) {
+        this.drawJunctionBox = drawJunctionBox;
+    }
+}

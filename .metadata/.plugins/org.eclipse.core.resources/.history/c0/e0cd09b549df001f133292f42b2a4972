@@ -1,0 +1,14 @@
+package canvas;
+import java.awt.BorderLayout;
+
+import javax.swing.*;
+
+
+public class MainClass {
+    public static void main(String[] args) {
+        // Create and show the main frame
+        new MainFrame();
+    }
+}
+
+

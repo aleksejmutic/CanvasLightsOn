@@ -1,0 +1,43 @@
+package canvas;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class MainFrame extends JFrame {
+    private Canvas canvas;
+    private JunctionBoxMouseListener junctionBoxMouseListener;
+
+    public MainFrame() {
+        setTitle("Circuit Editor");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Initialize the Canvas
+        canvas = new Canvas();
+
+        // Initialize the JunctionBoxMouseListener (MouseListener)
+        junctionBoxMouseListener = new JunctionBoxMouseListener(canvas);
+
+        // Add mouse listener to canvas
+        canvas.addMouseListener(junctionBoxMouseListener);
+
+        // Initialize the ButtonsPanel with ActionListener for the "Draw Junction Box" button
+        ButtonsPanel buttonsPanel = new ButtonsPanel(
+            e -> {
+                // Set the drawing mode when the button is clicked
+                junctionBoxMouseListener.setDrawing(true);
+                canvas.setDrawingCursor();  // Change the cursor to indicate drawing
+            },
+            e -> System.out.println("Draw Wire clicked")
+        );
+
+        // Add the panels to the frame
+        add(buttonsPanel, BorderLayout.NORTH);
+        add(canvas, BorderLayout.CENTER);
+
+        setVisible(true);
+    }
+}
+

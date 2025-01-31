@@ -1,0 +1,59 @@
+package canvas;
+
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class JunctionBoxMouseListener extends MouseAdapter {
+    private Canvas canvas;
+    private boolean isDrawing = false;
+
+    public JunctionBoxMouseListener(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
+    public void setDrawing(boolean drawing) {
+        this.isDrawing = drawing;
+    }
+
+    public boolean isDrawing() {
+        return isDrawing;
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (isDrawing && e.getButton() == MouseEvent.BUTTON1) {
+            int x = e.getX();
+            int y = e.getY();
+
+            int boxWidth = 100; // Width of the JunctionBox
+            int boxHeight = 50; // Height of the JunctionBox
+
+            // Check for overlap
+            if (isOverlappingExistingJunctionBox(x, y, boxWidth, boxHeight)) {
+                // Play beep sound
+                Toolkit.getDefaultToolkit().beep();
+            } else {
+                // Add new JunctionBox
+                JunctionBox junctionBox = new JunctionBox(x, y, boxWidth, boxHeight);
+                canvas.addJunctionBox(junctionBox);
+            }
+            // Keep drawing mode active
+        }
+    }
+
+    // Method to check for overlap with existing JunctionBoxes
+    private boolean isOverlappingExistingJunctionBox(int x, int y, int width, int height) {
+        Rectangle newBoxBounds = new Rectangle(x, y, width, height);
+        for (JunctionBox junctionBox : canvas.getJunctionBoxes()) {
+            Rectangle existingBoxBounds = new Rectangle(
+                junctionBox.getX(), junctionBox.getY(),
+                junctionBox.getWidth(), junctionBox.getHeight()
+            );
+            if (newBoxBounds.intersects(existingBoxBounds)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

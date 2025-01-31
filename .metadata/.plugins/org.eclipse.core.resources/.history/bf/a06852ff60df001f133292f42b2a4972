@@ -1,0 +1,84 @@
+package canvas;
+
+import java.awt.*;
+
+public class JunctionBox {
+    private int x, y, width, height;
+    private Color color = Color.WHITE;
+    private JunctionPoint[] junctionPoints;
+
+    private static final int OFFSET = 10; // Adjusted distance from the edge
+
+    public JunctionBox(int x, int y, int width, int height) {
+        // Swap width and height for portrait orientation
+        this.width = height;
+        this.height = width;
+
+        this.x = x;
+        this.y = y;
+
+        this.junctionPoints = new JunctionPoint[4];
+
+        initializeJunctionPoints();
+    }
+
+    private void initializeJunctionPoints() {
+        // Top junction point (slightly above the box)
+        junctionPoints[0] = new JunctionPoint(x + width / 2, y - OFFSET);
+
+        // Right junction point (slightly to the right of the box)
+        junctionPoints[1] = new JunctionPoint(x + width + OFFSET, y + height / 2);
+
+        // Bottom junction point (slightly below the box)
+        junctionPoints[2] = new JunctionPoint(x + width / 2, y + height + OFFSET);
+
+        // Left junction point (slightly to the left of the box)
+        junctionPoints[3] = new JunctionPoint(x - OFFSET, y + height / 2);
+    }
+
+    public boolean contains(Point point) {
+        Rectangle bounds = new Rectangle(x, y, width, height);
+        return bounds.contains(point);
+    }
+
+    public JunctionPoint[] getJunctionPoints() {
+        return junctionPoints;
+    }
+
+    public void draw(Graphics g) {
+        // Draw the JunctionBox
+        g.setColor(Color.BLACK);
+        g.drawRect(x, y, width, height);
+        g.setColor(color);
+        g.fillRect(x + 1, y + 1, width - 1, height - 1);
+
+        // Draw connector lines to JunctionPoints
+        g.setColor(Color.BLACK);
+        g.drawLine(x + width / 2, y,             junctionPoints[0].getX(), junctionPoints[0].getY()); // Top
+        g.drawLine(x + width,     y + height / 2, junctionPoints[1].getX(), junctionPoints[1].getY()); // Right
+        g.drawLine(x + width / 2, y + height,     junctionPoints[2].getX(), junctionPoints[2].getY()); // Bottom
+        g.drawLine(x,             y + height / 2, junctionPoints[3].getX(), junctionPoints[3].getY()); // Left
+
+        // Draw JunctionPoints
+        for (JunctionPoint point : junctionPoints) {
+            point.draw(g);
+        }
+    }
+
+    // Getter methods for position and size
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+}

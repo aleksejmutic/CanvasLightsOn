@@ -1,0 +1,18 @@
+package canvas;
+
+import java.awt.*;
+
+public class JunctionPoint {
+    private int x, y;
+    private static final int DIAMETER = 6; // Diameter of the dot
+
+    public JunctionPoint(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.DARK_GRAY);  // Color for the junction point
+        g.fillOval(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER);  // Draw the circle
+    }
+}

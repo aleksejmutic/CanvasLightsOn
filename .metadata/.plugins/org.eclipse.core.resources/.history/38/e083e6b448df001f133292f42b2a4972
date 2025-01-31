@@ -1,0 +1,16 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class DrawJunctionBoxListener implements ActionListener {
+    private DrawingPanel drawingPanel;
+
+    public DrawJunctionBoxListener(DrawingPanel drawingPanel) {
+        this.drawingPanel = drawingPanel;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Toggle the drawing mode on or off when the button is clicked
+        drawingPanel.setDrawingMode(true);
+    }
+}

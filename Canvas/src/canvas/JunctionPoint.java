@@ -1,0 +1,48 @@
+package canvas;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+
+public class JunctionPoint {
+    private int x, y;
+    private static final int DIAMETER = 6;
+    private JunctionBox parentBox;
+    private int id; // Unique identifier
+
+    public JunctionPoint(int x, int y) {
+        this.x = x;
+        this.y = y;
+        this.id = generateUniqueId();
+    }
+
+    public void setParentBox(JunctionBox box) {
+        this.parentBox = box;
+    }
+
+    public JunctionBox getParentBox() {
+        return parentBox;
+    }
+
+    public boolean contains(Point point) {
+        return point.distance(x, y) <= DIAMETER / 2;
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.DARK_GRAY);
+        g.fillOval(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER);
+    }
+
+    public int getX() { return x; }
+    public int getY() { return y; }
+
+    // Getter and Setter for ID
+    public int getId() { return id; }
+
+    // Unique ID generation
+    private static int nextId = 0;
+
+    private static synchronized int generateUniqueId() {
+        return nextId++;
+    }
+}

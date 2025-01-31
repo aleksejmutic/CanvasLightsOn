@@ -1,0 +1,45 @@
+package canvas;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Canvas extends JPanel {
+    private ArrayList<JunctionBox> junctionBoxes;
+    private ArrayList<Wire> wires;
+    private WireMouseListener wireMouseListener;
+    // Other fields...
+
+    public Canvas() {
+        // Initialization...
+        // Add MouseMotionListener for live preview
+        addMouseMotionListener(wireMouseListener);
+    }
+
+    // Other methods...
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        // Draw JunctionBoxes
+        for (JunctionBox junctionBox : junctionBoxes) {
+            junctionBox.draw(g);
+        }
+
+        // Draw Wires
+        for (Wire wire : wires) {
+            wire.draw(g);
+        }
+
+        // Draw the wire currently being drawn
+        if (wireMouseListener != null && wireMouseListener.isDrawingWire()) {
+            Wire currentWire = wireMouseListener.getCurrentWire();
+            if (currentWire != null) {
+                currentWire.draw(g);
+            }
+        }
+    }
+
+    // Other methods...
+}

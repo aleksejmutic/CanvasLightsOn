@@ -1,0 +1,58 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Wire {
+    private ArrayList<Point> points;
+
+    public Wire(Point startPoint) {
+        points = new ArrayList<>();
+        points.add(startPoint);
+    }
+
+    public void addOrthogonalPoint(Point newPoint) {
+        if (points.isEmpty()) {
+            points.add(newPoint);
+            return;
+        }
+
+        Point lastPoint = points.get(points.size() - 1);
+
+        // Create intermediate point aligned horizontally
+        Point intermediatePoint = new Point(newPoint.x, lastPoint.y);
+        points.add(intermediatePoint);
+
+        // Then add the new point
+        points.add(newPoint);
+    }
+
+    public void updateLastPoint(Point point) {
+        if (!points.isEmpty()) {
+            points.set(points.size() - 1, point);
+        }
+    }
+
+    public void addPoint(Point point) {
+        points.add(point);
+    }
+
+    public void removeLastPoint() {
+        if (!points.isEmpty()) {
+            points.remove(points.size() - 1);
+        }
+    }
+
+    public ArrayList<Point> getPoints() {
+        return points;
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point p1 = points.get(i);
+            Point p2 = points.get(i + 1);
+            g.drawLine(p1.x, p1.y, p2.x, p2.y);
+        }
+    }
+}

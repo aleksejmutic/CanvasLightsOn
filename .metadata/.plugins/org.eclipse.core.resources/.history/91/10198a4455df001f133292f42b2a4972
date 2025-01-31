@@ -1,0 +1,21 @@
+package canvas;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+
+public class ButtonsPanel extends JPanel {
+    public ButtonsPanel(ActionListener drawJunctionBoxListener, ActionListener drawWireListener) {
+        setLayout(new FlowLayout(FlowLayout.CENTER, 100, 10));
+        setBackground(Color.BLUE);
+
+        JButton drawJunctionBoxButton = new JButton("Draw Junction Box");
+        JButton drawWireButton = new JButton("Draw Wire");
+
+        drawJunctionBoxButton.addActionListener(drawJunctionBoxListener);
+        drawWireButton.addActionListener(drawWireListener);
+
+        add(drawJunctionBoxButton);
+        add(drawWireButton);
+    }
+}

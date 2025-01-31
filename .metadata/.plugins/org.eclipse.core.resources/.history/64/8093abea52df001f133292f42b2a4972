@@ -1,0 +1,39 @@
+package canvas;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Canvas extends JPanel {
+    private ArrayList<JunctionBox> junctionBoxes;
+    private ArrayList<Wire> wires;  // Store drawn wires
+
+    public Canvas() {
+        setPreferredSize(new Dimension(800, 500));
+        setBackground(Color.WHITE);
+        junctionBoxes = new ArrayList<>();
+        wires = new ArrayList<>();
+    }
+
+    public void addWire(Wire wire) {
+        wires.add(wire);
+        repaint();  // Trigger a repaint to update the drawing
+    }
+
+    public ArrayList<JunctionBox> getJunctionBoxes() {
+        return junctionBoxes;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        for (JunctionBox junctionBox : junctionBoxes) {
+            junctionBox.draw(g);
+        }
+
+        for (Wire wire : wires) {
+            wire.draw(g);
+        }
+    }
+}

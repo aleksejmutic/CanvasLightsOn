@@ -1,0 +1,33 @@
+package canvas;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Canvas extends JPanel {
+    // Existing fields...
+    private ArrayList<JunctionBox> junctionBoxes;
+    private ArrayList<Wire> wires;
+    private WireMouseListener wireMouseListener;
+    private JunctionBoxDragListener dragListener;
+
+    public Canvas() {
+        setPreferredSize(new Dimension(800, 500));
+        setBackground(Color.WHITE);
+        junctionBoxes = new ArrayList<>();
+        wires = new ArrayList<>();
+        dragListener = new JunctionBoxDragListener(this);
+        addMouseListener(dragListener);
+        addMouseMotionListener(dragListener);
+    }
+
+    // Existing methods...
+
+    public void updateConnectedWires(JunctionBox movedBox) {
+        for (Wire wire : wires) {
+            wire.updateIfConnected(movedBox);
+        }
+    }
+
+    // Rest of the class...
+}

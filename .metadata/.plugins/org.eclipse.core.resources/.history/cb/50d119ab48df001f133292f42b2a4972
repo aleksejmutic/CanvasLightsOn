@@ -1,0 +1,59 @@
+import java.awt.*;
+import java.util.ArrayList;
+
+public class JunctionBox {
+    private int x, y, width, height;
+    private ArrayList<JunctionPoint> junctionPoints;
+
+    public JunctionBox(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.junctionPoints = new ArrayList<>();
+        
+        // Place junction points in the middle of each side of the rectangle
+        junctionPoints.add(new JunctionPoint(x + width / 2, y)); // Top-center
+        junctionPoints.add(new JunctionPoint(x + width, y + height / 2)); // Right-center
+        junctionPoints.add(new JunctionPoint(x + width / 2, y + height)); // Bottom-center
+        junctionPoints.add(new JunctionPoint(x, y + height / 2)); // Left-center
+    }
+
+    public void draw(Graphics2D g2d) {
+        // Ensure proper color reset before each drawing
+        g2d.setColor(Color.WHITE);  // Set the color for the inside of the box
+        g2d.fillRect(x, y, width, height);  // Fill rectangle with white
+        g2d.setColor(Color.BLACK);  // Rectangle border
+        g2d.drawRect(x, y, width, height);  // Draw the rectangle border
+        
+        // Reset the stroke for drawing the lightning symbol
+        g2d.setStroke(new BasicStroke(4));  // Thicker line for the lightning symbol
+        
+        // Draw a cartoon-like lightning symbol (Z-shaped bolt)
+        g2d.setColor(Color.YELLOW);  // Lightning color
+        int startX = x + width / 4;    // Starting x for the lightning bolt
+        int startY = y + height / 4;   // Starting y for the lightning bolt
+        int midX = x + width / 2;      // Middle x point of the lightning
+        int midY = y + height / 2;     // Middle y point of the lightning bolt
+        int endX = x + 3 * width / 4;  // Ending x for the lightning bolt
+        int endY = y + 3 * height / 4; // Ending y for the lightning bolt
+        
+        // Draw the Z-shape lightning bolt
+        g2d.drawLine(startX, startY, midX, midY); // First line
+        g2d.drawLine(midX, midY, endX, endY);     // Second line
+        g2d.drawLine(endX, endY, x + width / 2, y + height - 20); // Third line (finishing the lightning shape)
+
+        // Draw the junction points on all sides
+        for (JunctionPoint point : junctionPoints) {
+            point.draw(g2d);
+        }
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+}

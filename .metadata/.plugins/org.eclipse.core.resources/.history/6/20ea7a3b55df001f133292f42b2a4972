@@ -1,0 +1,45 @@
+package canvas;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class MainFrame extends JFrame {
+    private Canvas canvas;
+    private JunctionBoxMouseListener junctionBoxMouseListener;
+    private WireMouseListener wireMouseListener;
+
+    public MainFrame() {
+        setTitle("Circuit Editor");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        canvas = new Canvas();
+
+        junctionBoxMouseListener = new JunctionBoxMouseListener(canvas);
+        wireMouseListener = new WireMouseListener(canvas);
+
+        canvas.addMouseListener(junctionBoxMouseListener);
+        canvas.addMouseListener(wireMouseListener);
+
+        ButtonsPanel buttonsPanel = new ButtonsPanel(
+            e -> {
+                // Activate junction box drawing mode
+                junctionBoxMouseListener.setDrawing(true);
+                wireMouseListener.setDrawingMode(false);
+                canvas.setDrawingCursor();
+            },
+            e -> {
+                // Activate wire drawing mode
+                wireMouseListener.setDrawingMode(true);
+                junctionBoxMouseListener.setDrawing(false);
+                canvas.setDrawingCursor();
+            }
+        );
+
+        add(buttonsPanel, BorderLayout.NORTH);
+        add(canvas, BorderLayout.CENTER);
+
+        setVisible(true);
+    }
+}

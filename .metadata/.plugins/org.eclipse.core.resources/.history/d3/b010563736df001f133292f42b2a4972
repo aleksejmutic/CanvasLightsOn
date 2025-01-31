@@ -1,0 +1,63 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class JunctionBox {
+    private int x, y, width, height;
+    private ArrayList<JunctionPoint> junctionPoints;
+
+    public JunctionBox(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.junctionPoints = new ArrayList<>();
+        
+        // Place junction points in the middle of each side of the rectangle
+        junctionPoints.add(new JunctionPoint(x + width / 2, y)); // Top-center
+        junctionPoints.add(new JunctionPoint(x + width, y + height / 2)); // Right-center
+        junctionPoints.add(new JunctionPoint(x + width / 2, y + height)); // Bottom-center
+        junctionPoints.add(new JunctionPoint(x, y + height / 2)); // Left-center
+    }
+
+    public void draw(Graphics2D g2d) {
+        // Draw the rectangle (Junction Box) with a white inside
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(x, y, width, height);
+        g2d.setColor(Color.BLACK); // Rectangle border
+        g2d.drawRect(x, y, width, height);
+        
+        // Draw a cartoon-like lightning symbol (Z-shaped bolt)
+        g2d.setColor(Color.YELLOW);
+        g2d.setStroke(new BasicStroke(4)); // Thicker line for the lightning
+        
+        // Create a lightning bolt-like path
+        int[] xPoints = {x + width / 4, x + width / 2, x + 3 * width / 4, x + width / 2};
+        int[] yPoints = {y + height / 4, y + height / 2, y + 3 * height / 4, y + height - 20};
+        
+        g2d.drawPolyline(xPoints, yPoints, xPoints.length); // Draw the lightning bolt
+
+        // Draw junction points
+        for (JunctionPoint point : junctionPoints) {
+            point.draw(g2d);
+        }
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+}
+
+
+

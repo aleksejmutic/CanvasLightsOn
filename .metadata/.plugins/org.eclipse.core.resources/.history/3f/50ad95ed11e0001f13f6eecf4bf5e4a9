@@ -1,0 +1,97 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Wire {
+    private ArrayList<Point> points;
+    private JunctionPoint startJunction;
+    private JunctionPoint endJunction;
+    private ArrayList<Point> userDefinedPoints;
+    private Canvas canvas;
+
+    public Wire(JunctionPoint startJunction, Canvas canvas) {
+        this.startJunction = startJunction;
+        this.canvas = canvas;
+        points = new ArrayList<>();
+        userDefinedPoints = new ArrayList<>();
+        points.add(new Point(startJunction.getX(), startJunction.getY()));
+    }
+
+    public void addPoint(Point point) {
+        points.add(point);
+    }
+
+    public void updateLastPoint(Point point) {
+        if (!points.isEmpty()) {
+            points.set(points.size() - 1, point);
+            recalculatePath();
+        }
+    }
+
+    public void addUserDefinedPoint(Point point) {
+        updateLastPoint(point);
+        userDefinedPoints.add(point);
+        points.add(point);
+    }
+
+    public void setEndJunction(JunctionPoint endJunction) {
+        this.endJunction = endJunction;
+        updateLastPoint(new Point(endJunction.getX(), endJunction.getY()));
+        recalculatePath();
+    }
+
+    public void recalculatePath() {
+        points.clear();
+        Point startPoint = new Point(startJunction.getX(), startJunction.getY());
+        Point previousPoint = startPoint;
+        points.add(startPoint);
+
+        for (Point userPoint : userDefinedPoints) {
+            ArrayList<Point> segment = PathFinder.findPath(previousPoint, userPoint, canvas);
+            if (!segment.isEmpty() && segment.get(0).equals(previousPoint)) {
+                segment.remove(0);
+            }
+            points.addAll(segment);
+            previousPoint = userPoint;
+        }
+
+        if (endJunction != null) {
+            Point endPoint = new Point(endJunction.getX(), endJunction.getY());
+            ArrayList<Point> segment = PathFinder.findPath(previousPoint, endPoint, canvas);
+            if (!segment.isEmpty() && segment.get(0).equals(previousPoint)) {
+                segment.remove(0);
+            }
+            points.addAll(segment);
+        } else {
+            points.add(new Point(previousPoint.x, previousPoint.y));
+        }
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        Point prevPoint = points.get(0);
+        for (int i = 1; i < points.size(); i++) {
+            Point currPoint = points.get(i);
+            g.drawLine(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
+            prevPoint = currPoint;
+        }
+    }
+
+    // Getter methods...
+    public JunctionPoint getStartJunction() {
+        return startJunction;
+    }
+
+    public JunctionPoint getEndJunction() {
+        return endJunction;
+    }
+
+    public ArrayList<Point> getUserDefinedPoints() {
+        return userDefinedPoints;
+    }
+
+    public ArrayList<Point> getPoints() {
+        return points;
+    }
+}

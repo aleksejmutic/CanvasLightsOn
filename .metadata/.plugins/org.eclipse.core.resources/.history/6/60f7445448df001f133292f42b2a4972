@@ -1,0 +1,25 @@
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class DrawJunctionBoxListener implements ActionListener {
+    private DrawingPanel drawingPanel;
+
+    public DrawJunctionBoxListener(DrawingPanel drawingPanel) {
+        this.drawingPanel = drawingPanel;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Randomly position the new JunctionBox (you can modify this to any logic you want)
+        int x = 100 + (int) (Math.random() * 500);
+        int y = 100 + (int) (Math.random() * 400);
+        int width = 100;
+        int height = 150;
+
+        // Create a new JunctionBox
+        JunctionBox junctionBox = new JunctionBox(x, y, width, height);
+
+        // Add the JunctionBox to the panel, which will refresh the display
+        drawingPanel.addJunctionBox(junctionBox);
+    }
+}

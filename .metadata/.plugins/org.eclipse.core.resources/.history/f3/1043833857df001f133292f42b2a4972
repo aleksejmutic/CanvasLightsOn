@@ -1,0 +1,87 @@
+package canvas;
+
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class WireMouseListener extends MouseAdapter {
+    private Canvas canvas;
+    private boolean isDrawingMode = false;
+    private Wire currentWire = null;
+    private JunctionPoint startJunction = null;
+
+    public WireMouseListener(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
+    public void setDrawingMode(boolean drawingMode) {
+        this.isDrawingMode = drawingMode;
+
+        // Reset current wire and cursor when drawing mode is deactivated
+        if (!isDrawingMode) {
+            currentWire = null;
+            startJunction = null;
+            canvas.resetCursor();
+        } else {
+            canvas.setDrawingCursor();
+        }
+    }
+
+    public boolean isDrawingMode() {
+        return isDrawingMode;
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (isDrawingMode && e.getButton() == MouseEvent.BUTTON1) {
+            Point point = e.getPoint();
+            JunctionPoint clickedJunction = getClickedJunctionPoint(point);
+
+            if (clickedJunction != null) {
+                if (currentWire == null) {
+                    // Start a new wire
+                    currentWire = new Wire();
+                    startJunction = clickedJunction;
+                } else {
+                    // Continue existing wire
+                    currentWire.addSegment(startJunction, clickedJunction);
+                    startJunction = clickedJunction;
+                }
+                canvas.repaint();
+            } else {
+                // Optionally handle clicks not on a junction point
+                // For example, ignore or provide feedback
+            }
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (isDrawingMode && e.getButton() == MouseEvent.BUTTON1 && currentWire != null) {
+            Point point = e.getPoint();
+            JunctionPoint clickedJunction = getClickedJunctionPoint(point);
+
+            if (clickedJunction != null) {
+                // Finish the wire at the clicked junction point
+                currentWire.addSegment(startJunction, clickedJunction);
+                canvas.addWire(currentWire);
+
+                // Reset for the next wire
+                currentWire = null;
+                startJunction = null;
+            }
+            canvas.repaint();
+        }
+    }
+
+    private JunctionPoint getClickedJunctionPoint(Point point) {
+        for (JunctionBox junctionBox : canvas.getJunctionBoxes()) {
+            for (JunctionPoint junctionPoint : junctionBox.getJunctionPoints()) {
+                if (junctionPoint.contains(point)) {
+                    return junctionPoint;
+                }
+            }
+        }
+        return null;
+    }
+}

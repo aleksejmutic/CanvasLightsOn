@@ -1,0 +1,28 @@
+package canvas;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+
+
+public class ButtonsPanel extends JPanel {
+    public ButtonsPanel(ActionListener drawJunctionBoxListener, ActionListener drawWireListener) {
+        // Set the layout for the panel to FlowLayout with centered alignment
+        setLayout(new FlowLayout(FlowLayout.CENTER, 100, 10));  // Space between buttons is 100px
+        
+        // Set the background color of the ButtonsPanel to blue
+        setBackground(Color.BLUE);
+        
+        // Create the two buttons
+        JButton drawJunctionBoxButton = new JButton("Draw Junction Box");
+        JButton drawWireButton = new JButton("Draw Wire");
+
+        // Add action listeners to buttons
+        drawJunctionBoxButton.addActionListener(drawJunctionBoxListener);
+        drawWireButton.addActionListener(drawWireListener);
+
+        // Add buttons to the panel
+        add(drawJunctionBoxButton);
+        add(drawWireButton);
+    }
+}

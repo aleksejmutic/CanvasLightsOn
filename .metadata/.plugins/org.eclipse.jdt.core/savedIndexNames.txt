@@ -1,0 +1,4 @@
+INDEX VERSION 1.134+C:\Users\Alexei\Desktop\Canvas vjezba\.metadata\.plugins\org.eclipse.jdt.core
+1793627184.index
+1865797976.index
+2498361237.index

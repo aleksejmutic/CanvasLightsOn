@@ -1,0 +1,32 @@
+package canvas;
+import java.awt.BorderLayout;
+
+import javax.swing.*;
+
+
+public class MainClass {
+    public static void main(String[] args) {
+        // Create the main frame
+        JFrame frame = new JFrame("JunctionBox Drawer");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Initialize the Drawing Panel
+        DrawingPanel drawingPanel = new DrawingPanel();
+        frame.add(drawingPanel, BorderLayout.CENTER);
+
+        // Create the buttons panel
+        JPanel buttonPanel = new JPanel();
+        JButton drawJunctionBoxButton = new JButton("Draw Junction Box");
+        buttonPanel.add(drawJunctionBoxButton);
+        frame.add(buttonPanel, BorderLayout.NORTH);
+
+        // Add the ActionListener to the button
+        DrawJunctionBoxListener listener = new DrawJunctionBoxListener(drawingPanel);
+        drawJunctionBoxButton.addActionListener(listener);
+
+        // Set up and display the frame
+        frame.pack();
+        frame.setVisible(true);
+    }
+}
+

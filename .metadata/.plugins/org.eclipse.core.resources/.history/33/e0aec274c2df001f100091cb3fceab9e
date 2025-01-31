@@ -1,0 +1,83 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Wire {
+    private ArrayList<Point> points;               // Points used for drawing
+    private JunctionPoint startJunction;           // Starting JunctionPoint
+    private JunctionPoint endJunction;             // Ending JunctionPoint
+    private ArrayList<Point> userDefinedPoints;    // Points added by the user during drawing
+
+    public Wire(JunctionPoint startJunction) {
+        this.startJunction = startJunction;
+        points = new ArrayList<>();
+        userDefinedPoints = new ArrayList<>();
+        // Start with the starting point
+        points.add(new Point(startJunction.getX(), startJunction.getY()));
+    }
+
+    public void setEndJunction(JunctionPoint endJunction) {
+        this.endJunction = endJunction;
+        recalculatePath();
+    }
+
+    public void addUserDefinedPoint(Point point) {
+        userDefinedPoints.add(point);
+        recalculatePath();
+    }
+
+    public void addPoint(Point point) {
+        points.add(point);
+    }
+
+    public void updateLastPoint(Point point) {
+        if (!points.isEmpty()) {
+            points.set(points.size() - 1, point);
+        }
+    }
+
+    public void recalculatePath() {
+        points.clear();
+        Point startPoint = new Point(startJunction.getX(), startJunction.getY());
+        points.add(startPoint);
+
+        Point previousPoint = startPoint;
+        for (Point userPoint : userDefinedPoints) {
+            // Create orthogonal segment from previousPoint to userPoint
+            Point intermediatePoint = new Point(userPoint.x, previousPoint.y);
+            points.add(intermediatePoint);
+            points.add(new Point(userPoint.x, userPoint.y));
+            previousPoint = userPoint;
+        }
+
+        // For live preview, add the current cursor position as the last point
+        if (endJunction != null) {
+            Point endPoint = new Point(endJunction.getX(), endJunction.getY());
+            Point intermediatePoint = new Point(endPoint.x, previousPoint.y);
+            points.add(intermediatePoint);
+            points.add(endPoint);
+        } else if (!userDefinedPoints.isEmpty()) {
+            // Add a placeholder for the current cursor position
+            points.add(new Point(previousPoint.x, previousPoint.y));
+        }
+    }
+
+    public void updateIfConnected(JunctionBox movedBox) {
+        // Not needed currently since boxes are not movable
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point p1 = points.get(i);
+            Point p2 = points.get(i + 1);
+            g.drawLine(p1.x, p1.y, p2.x, p2.y);
+        }
+    }
+
+    // Getter methods...
+    public ArrayList<Point> getPoints() {
+        return points;
+    }
+}

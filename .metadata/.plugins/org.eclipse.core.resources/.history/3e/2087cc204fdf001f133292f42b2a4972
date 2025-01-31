@@ -1,0 +1,54 @@
+package canvas;
+
+import java.awt.*;
+
+public class JunctionBox {
+    private int x, y, width, height;
+    private Color color = Color.WHITE;
+    private JunctionPoint[] junctionPoints;  // Array to store the JunctionPoints
+
+    public JunctionBox(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+
+        // Swap width and height for portrait orientation
+        this.width = height;  // Shorter side becomes the width
+        this.height = width;  // Longer side becomes the height
+        
+        this.junctionPoints = new JunctionPoint[4];
+
+        // Create junction points at the center of each side of the portrait rectangle
+        junctionPoints[0] = new JunctionPoint(x + width / 2, y); // Top (center of width)
+        junctionPoints[1] = new JunctionPoint(x + width, y + height / 2); // Right (center of height)
+        junctionPoints[2] = new JunctionPoint(x + width / 2, y + height); // Bottom (center of width)
+        junctionPoints[3] = new JunctionPoint(x, y + height / 2); // Left (center of height)
+    }
+
+    public void draw(Graphics g) {
+        // Manually draw the JunctionBox as a portrait rectangle
+        g.setColor(Color.BLACK);
+        // Drawing the rectangle with adjusted width and height
+        g.drawRect(x, y, width, height);  // Width is smaller, height is larger (portrait)
+        g.setColor(color);
+        g.fillRect(x + 1, y + 1, width - 1, height - 1);  // Filling with white
+
+        // Draw the JunctionPoints (dark dots) in the correct positions
+        for (JunctionPoint point : junctionPoints) {
+            point.draw(g);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

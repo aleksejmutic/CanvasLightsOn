@@ -1,0 +1,39 @@
+package canvas;
+
+import java.awt.*;
+
+public class JunctionPoint {
+    private int x, y;
+    private static final int DIAMETER = 6;
+    private JunctionBox parentBox;
+
+    public JunctionPoint(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setParentBox(JunctionBox box) {
+        this.parentBox = box;
+    }
+
+    public JunctionBox getParentBox() {
+        return parentBox;
+    }
+
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public boolean contains(Point point) {
+        return point.distance(x, y) <= DIAMETER / 2;
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.DARK_GRAY);
+        g.fillOval(x - DIAMETER / 2, y - DIAMETER / 2, DIAMETER, DIAMETER);
+    }
+
+    public int getX() { return x; }
+    public int getY() { return y; }
+}

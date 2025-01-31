@@ -1,0 +1,30 @@
+package canvas;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class MainFrame extends JFrame {
+    public MainFrame() {
+        // Set up the frame
+        setTitle("Circuit Editor");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Create the ButtonsPanel with ActionListeners for buttons
+        ButtonsPanel buttonsPanel = new ButtonsPanel(
+                e -> System.out.println("Draw Junction Box clicked"),  // Placeholder for action
+                e -> System.out.println("Draw Wire clicked")  // Placeholder for action
+        );
+
+        // Create the Canvas (drawing area)
+        Canvas canvas = new Canvas();
+
+        // Add the panels to the frame
+        add(buttonsPanel, BorderLayout.NORTH);  // Buttons at the top
+        add(canvas, BorderLayout.CENTER);  // Canvas at the bottom
+
+        // Make the frame visible
+        setVisible(true);
+    }
+}

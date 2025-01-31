@@ -1,0 +1,44 @@
+package canvas;
+
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+
+public class JunctionBox {
+    private int x, y, width, height;
+    private Color boxColor = Color.WHITE;  // Color of the JunctionBox
+    private Color pointColor = Color.BLACK;  // Color of the JunctionPoints
+
+    public JunctionBox(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = height;  // Swap width and height to rotate the box
+        this.height = width;  // Swap width and height to rotate the box
+    }
+
+    public void draw(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Draw the rotated rectangle
+        g2d.setColor(boxColor);
+        g2d.fillRect(x - height / 2, y - width / 2, height, width);  // Draw the box rotated by 90 degrees
+
+        // Draw JunctionPoints at the middle of each side
+        drawJunctionPoints(g2d);
+    }
+
+    private void drawJunctionPoints(Graphics2D g2d) {
+        g2d.setColor(pointColor);
+
+        // Calculate JunctionPoints at the middle of each side
+        g2d.fill(new Ellipse2D.Double(x - height / 2, y - width / 2, 6, 6)); // Top side
+        g2d.fill(new Ellipse2D.Double(x + height / 2 - 6, y - width / 2, 6, 6)); // Right side
+        g2d.fill(new Ellipse2D.Double(x - height / 2, y + width / 2 - 6, 6, 6)); // Bottom side
+        g2d.fill(new Ellipse2D.Double(x - height / 2 - 6, y - width / 2, 6, 6)); // Left side
+    }
+}
+
+
+
+

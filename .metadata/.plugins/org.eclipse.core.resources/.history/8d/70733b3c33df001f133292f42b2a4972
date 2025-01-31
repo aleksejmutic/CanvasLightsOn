@@ -1,0 +1,22 @@
+package canvas;
+
+class DrawingPanel extends JPanel {
+    
+    public DrawingPanel() {
+        setBackground(Color.WHITE); // Set background color
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+        
+        // Enable anti-aliasing for smooth rendering
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        // Example: Draw a test conductor (line)
+        g2d.setStroke(new BasicStroke(3));
+        g2d.setColor(Color.BLACK);
+        g2d.drawLine(100, 100, 300, 100);
+    }
+}

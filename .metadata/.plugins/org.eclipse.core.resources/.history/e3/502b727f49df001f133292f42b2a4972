@@ -1,0 +1,40 @@
+package canvas;
+import java.awt.*;
+import java.util.ArrayList;
+
+import java.awt.*;
+
+public class JunctionBox {
+    private int x, y, width, height;
+
+    public JunctionBox(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+    // Method to draw the JunctionBox and the points on each side
+    public void draw(Graphics2D g2d) {
+        // Draw the rectangle (JunctionBox)
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(x, y, width, height);
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(x, y, width, height);
+
+        // Draw the JunctionPoints on all four sides (dots)
+        drawJunctionPoints(g2d);
+    }
+
+    private void drawJunctionPoints(Graphics2D g2d) {
+        int pointSize = 8;
+        // Top-left corner
+        g2d.fillOval(x + width / 2 - pointSize / 2, y - pointSize / 2, pointSize, pointSize);  // Top point
+        // Top-right corner
+        g2d.fillOval(x + width / 2 - pointSize / 2, y + height - pointSize / 2, pointSize, pointSize);  // Bottom point
+        // Bottom-left corner
+        g2d.fillOval(x - pointSize / 2, y + height / 2 - pointSize / 2, pointSize, pointSize);  // Left point
+        // Bottom-right corner
+        g2d.fillOval(x + width - pointSize / 2, y + height / 2 - pointSize / 2, pointSize, pointSize);  // Right point
+    }
+}

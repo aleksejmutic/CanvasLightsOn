@@ -1,0 +1,31 @@
+package canvas;
+import java.awt.*;
+import javax.swing.*;
+import java.util.ArrayList;
+
+public class DrawingPanel extends JPanel {
+    private ArrayList<JunctionBox> junctionBoxes;
+
+    public DrawingPanel() {
+        junctionBoxes = new ArrayList<>();
+        setPreferredSize(new Dimension(800, 600));
+    }
+
+    public void addJunctionBox(JunctionBox junctionBox) {
+        junctionBoxes.add(junctionBox);
+        repaint();  // Repaint to refresh the canvas with the new JunctionBox
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);  // Clear the canvas before drawing
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Draw all JunctionBoxes in the list
+        for (JunctionBox junctionBox : junctionBoxes) {
+            junctionBox.draw(g2d);
+        }
+    }
+}

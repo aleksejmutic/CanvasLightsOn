@@ -1,0 +1,29 @@
+package canvas;
+
+import java.awt.event.*;
+
+public class JunctionBoxMouseListener extends MouseAdapter {
+    private Canvas canvas;
+    private boolean isDrawing = false;
+
+    public JunctionBoxMouseListener(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
+    public void setDrawing(boolean drawing) {
+        this.isDrawing = drawing;
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (e.getButton() == MouseEvent.BUTTON1 && isDrawing) {
+            int x = e.getX();
+            int y = e.getY();
+
+            JunctionBox junctionBox = new JunctionBox(x, y, 100, 50);  // Example size (100x50)
+            canvas.addJunctionBox(junctionBox);
+
+            // Keep drawing mode active for continuous drawing
+        }
+    }
+}

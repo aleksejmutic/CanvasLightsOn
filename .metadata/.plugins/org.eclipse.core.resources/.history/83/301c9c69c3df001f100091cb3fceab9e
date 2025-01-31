@@ -1,0 +1,98 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Wire {
+    private ArrayList<Point> points;               // Points used for drawing
+    private JunctionPoint startJunction;           // Starting JunctionPoint
+    private JunctionPoint endJunction;             // Ending JunctionPoint
+    private ArrayList<Point> userDefinedPoints;    // Points added by the user during drawing
+
+    public Wire(JunctionPoint startJunction) {
+        this.startJunction = startJunction;
+        points = new ArrayList<>();
+        userDefinedPoints = new ArrayList<>();
+        // Initialize with the starting point
+        points.add(new Point(startJunction.getX(), startJunction.getY()));
+    }
+
+    public void addPoint(Point point) {
+        points.add(point);
+    }
+
+    public void updateLastPoint(Point point) {
+        if (!points.isEmpty()) {
+            points.set(points.size() - 1, point);
+            recalculatePath();
+        }
+    }
+
+    public void addUserDefinedPoint(Point point) {
+        // Fix the last point to the current position before adding a new point
+        updateLastPoint(point);
+        userDefinedPoints.add(point);
+        // Add a placeholder for the next point
+        points.add(point);
+    }
+
+    public void setEndJunction(JunctionPoint endJunction) {
+        this.endJunction = endJunction;
+        updateLastPoint(new Point(endJunction.getX(), endJunction.getY()));
+        recalculatePath();
+    }
+
+    public void recalculatePath() {
+        points.clear();
+        Point startPoint = new Point(startJunction.getX(), startJunction.getY());
+        points.add(startPoint);
+
+        Point previousPoint = startPoint;
+        for (Point userPoint : userDefinedPoints) {
+            // Create orthogonal segment from previousPoint to userPoint
+            Point intermediatePoint = new Point(userPoint.x, previousPoint.y);
+            points.add(intermediatePoint);
+            points.add(new Point(userPoint.x, userPoint.y));
+            previousPoint = userPoint;
+        }
+
+        if (endJunction != null) {
+            // Draw line to the end junction
+            Point endPoint = new Point(endJunction.getX(), endJunction.getY());
+            Point intermediatePoint = new Point(endPoint.x, previousPoint.y);
+            points.add(intermediatePoint);
+            points.add(endPoint);
+        } else {
+            // Placeholder for the current mouse position, will be updated in updateLastPoint
+            points.add(new Point(previousPoint.x, previousPoint.y));
+        }
+    }
+
+    public void draw(Graphics g) {
+        // Debug statement
+        System.out.println("Drawing wire with points: " + points);
+        g.setColor(Color.BLACK);
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point start = points.get(i);
+            Point end = points.get(i + 1);
+            g.drawLine(start.x, start.y, end.x, end.y);
+        }
+    }
+
+    // Getter methods...
+    public JunctionPoint getStartJunction() {
+        return startJunction;
+    }
+
+    public JunctionPoint getEndJunction() {
+        return endJunction;
+    }
+
+    public ArrayList<Point> getUserDefinedPoints() {
+        return userDefinedPoints;
+    }
+
+    public ArrayList<Point> getPoints() {
+        return points;
+    }
+}

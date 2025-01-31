@@ -1,0 +1,226 @@
+package canvas;
+
+import java.awt.*;
+import java.awt.geom.*;
+import java.util.*;
+
+public class Wire {
+    private ArrayList<Point> points;               // Points used for drawing
+    private JunctionPoint startJunction;           // Starting JunctionPoint
+    private JunctionPoint endJunction;             // Ending JunctionPoint
+    private ArrayList<Point> userDefinedPoints;    // Points added by the user during drawing
+    private Canvas canvas;                         // Reference to the canvas for accessing JunctionBoxes
+    private static final int OFFSET = 10;          // Offset for movements and avoiding obstacles
+
+    public Wire(JunctionPoint startJunction, Canvas canvas) {
+        this.startJunction = startJunction;
+        this.canvas = canvas;
+        points = new ArrayList<>();
+        userDefinedPoints = new ArrayList<>();
+        // Initialize with the starting point adjusted outside the JunctionBox
+        Point adjustedStartPoint = adjustPointOutsideJunctionBox(
+            new Point(startJunction.getX(), startJunction.getY()),
+            startJunction.getParentBox()
+        );
+        points.add(adjustedStartPoint);
+    }
+
+    public void addPoint(Point point) {
+        points.add(point);
+    }
+
+    public void updateLastPoint(Point point) {
+        if (!points.isEmpty()) {
+            point = adjustPointIfInsideObstacle(point);
+            points.set(points.size() - 1, point);
+            recalculatePath();
+        }
+    }
+
+    public void addUserDefinedPoint(Point point) {
+        // Fix the last point to the current position before adding a new point
+        updateLastPoint(point);
+        userDefinedPoints.add(point);
+        // Add a placeholder for the next point
+        points.add(point);
+    }
+
+    public void setEndJunction(JunctionPoint endJunction) {
+        this.endJunction = endJunction;
+        Point adjustedEndPoint = adjustPointOutsideJunctionBox(
+            new Point(endJunction.getX(), endJunction.getY()),
+            endJunction.getParentBox()
+        );
+        updateLastPoint(adjustedEndPoint);
+        recalculatePath();
+    }
+
+    public void recalculatePath() {
+        points.clear();
+        Point startPoint = adjustPointOutsideJunctionBox(
+            new Point(startJunction.getX(), startJunction.getY()),
+            startJunction.getParentBox()
+        );
+        Point previousPoint = startPoint;
+        points.add(startPoint);
+
+        for (Point userPoint : userDefinedPoints) {
+            // Route from previousPoint to userPoint
+            ArrayList<Point> segment = routeAroundObstacles(previousPoint, userPoint);
+            // Remove the starting point to avoid duplication
+            if (!segment.isEmpty() && segment.get(0).equals(previousPoint)) {
+                segment.remove(0);
+            }
+            points.addAll(segment);
+            previousPoint = userPoint;
+        }
+
+        if (endJunction != null) {
+            Point endPoint = adjustPointOutsideJunctionBox(
+                new Point(endJunction.getX(), endJunction.getY()),
+                endJunction.getParentBox()
+            );
+            // Route from previousPoint to endPoint
+            ArrayList<Point> segment = routeAroundObstacles(previousPoint, endPoint);
+            // Remove the starting point to avoid duplication
+            if (!segment.isEmpty() && segment.get(0).equals(previousPoint)) {
+                segment.remove(0);
+            }
+            points.addAll(segment);
+        } else {
+            // Placeholder for current mouse position
+            points.add(new Point(previousPoint.x, previousPoint.y));
+        }
+    }
+
+    // Make sure this method is accessible where needed
+    public Point adjustPointOutsideJunctionBox(Point point, JunctionBox box) {
+        int x = point.x;
+        int y = point.y;
+
+        if (point.x == box.getX()) {
+            x -= OFFSET;
+        } else if (point.x == box.getX() + box.getWidth()) {
+            x += OFFSET;
+        }
+
+        if (point.y == box.getY()) {
+            y -= OFFSET;
+        } else if (point.y == box.getY() + box.getHeight()) {
+            y += OFFSET;
+        }
+
+        return new Point(x, y);
+    }
+
+    private Point adjustPointIfInsideObstacle(Point point) {
+        for (JunctionBox box : canvas.getJunctionBoxes()) {
+            Rectangle boxBounds = new Rectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight());
+            if (boxBounds.contains(point)) {
+                // Adjust point to be outside the box
+                return adjustPointOutsideJunctionBox(point, box);
+            }
+        }
+        return point;
+    }
+
+    private ArrayList<Point> routeAroundObstacles(Point start, Point end) {
+        ArrayList<Point> path = new ArrayList<>();
+
+        // Use BFS for pathfinding
+        Queue<Point> queue = new LinkedList<>();
+        Map<Point, Point> cameFrom = new HashMap<>();
+        Set<Point> visited = new HashSet<>();
+
+        queue.add(start);
+        visited.add(start);
+
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+
+            if (current.equals(end)) {
+                // Reconstruct path from end to start
+                ArrayList<Point> fullPath = new ArrayList<>();
+                fullPath.add(end);
+                Point temp = current;
+                while (!temp.equals(start)) {
+                    temp = cameFrom.get(temp);
+                    fullPath.add(0, temp);
+                }
+                return fullPath;
+            }
+
+            for (Point neighbor : getNeighbors(current)) {
+                if (!visited.contains(neighbor) && !doesSegmentIntersectObstacles(current, neighbor)) {
+                    visited.add(neighbor);
+                    cameFrom.put(neighbor, current);
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        // If no path found, return direct path (may intersect obstacles)
+        path.add(start);
+        path.add(end);
+        return path;
+    }
+
+    private java.util.List<Point> getNeighbors(Point point) {
+        int stepSize = OFFSET;
+        java.util.List<Point> neighbors = new ArrayList<>();
+        neighbors.add(new Point(point.x + stepSize, point.y));     // Right
+        neighbors.add(new Point(point.x - stepSize, point.y));     // Left
+        neighbors.add(new Point(point.x, point.y + stepSize));     // Down
+        neighbors.add(new Point(point.x, point.y - stepSize));     // Up
+        return neighbors;
+    }
+
+    private boolean doesSegmentIntersectObstacles(Point p1, Point p2) {
+        Line2D line = new Line2D.Double(p1, p2);
+        for (JunctionBox box : canvas.getJunctionBoxes()) {
+            // Ignore the starting and ending boxes
+            if (box == startJunction.getParentBox() || (endJunction != null && box == endJunction.getParentBox())) {
+                continue;
+            }
+            Rectangle2D boxBounds = new Rectangle2D.Double(box.getX(), box.getY(), box.getWidth(), box.getHeight());
+            // Inflate the rectangle slightly to avoid wires being too close
+            Rectangle2D inflatedBounds = new Rectangle2D.Double(
+                boxBounds.getX() - OFFSET,
+                boxBounds.getY() - OFFSET,
+                boxBounds.getWidth() + 2 * OFFSET,
+                boxBounds.getHeight() + 2 * OFFSET
+            );
+            if (inflatedBounds.contains(p1) || inflatedBounds.contains(p2) || line.intersects(inflatedBounds)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        Point prevPoint = points.get(0);
+        for (int i = 1; i < points.size(); i++) {
+            Point currPoint = points.get(i);
+            g.drawLine(prevPoint.x, prevPoint.y, currPoint.x, currPoint.y);
+            prevPoint = currPoint;
+        }
+    }
+
+    // Getter methods...
+    public JunctionPoint getStartJunction() {
+        return startJunction;
+    }
+
+    public JunctionPoint getEndJunction() {
+        return endJunction;
+    }
+
+    public ArrayList<Point> getUserDefinedPoints() {
+        return userDefinedPoints;
+    }
+
+    public ArrayList<Point> getPoints() {
+        return points;
+    }
+}

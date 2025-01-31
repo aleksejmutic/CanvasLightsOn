@@ -1,0 +1,52 @@
+package canvas;
+
+import java.awt.*;
+
+public class JunctionBox {
+    private int x, y, width, height;
+    private Color color = Color.WHITE;
+    private JunctionPoint[] junctionPoints;
+
+    public JunctionBox(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+
+        // Swap width and height for portrait orientation
+        this.width = height;
+        this.height = width;
+
+        this.junctionPoints = new JunctionPoint[4];
+
+        // Create junction points at the center of each side
+        junctionPoints[0] = new JunctionPoint(x + this.width / 2, y);               // Top
+        junctionPoints[1] = new JunctionPoint(x + this.width, y + this.height / 2); // Right
+        junctionPoints[2] = new JunctionPoint(x + this.width / 2, y + this.height); // Bottom
+        junctionPoints[3] = new JunctionPoint(x, y + this.height / 2);              // Left
+    }
+
+    public boolean contains(Point point) {
+        Rectangle bounds = new Rectangle(x, y, width, height);
+        return bounds.contains(point);
+    }
+
+    public JunctionPoint[] getJunctionPoints() {
+        return junctionPoints;
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.drawRect(x, y, width, height);
+        g.setColor(color);
+        g.fillRect(x + 1, y + 1, width - 1, height - 1);
+
+        for (JunctionPoint point : junctionPoints) {
+            point.draw(g);
+        }
+    }
+
+    // Getter methods for x, y, width, and height
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public int getWidth() { return width; }
+    public int getHeight() { return height; }
+}

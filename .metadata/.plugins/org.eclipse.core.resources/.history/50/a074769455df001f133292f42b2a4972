@@ -1,0 +1,74 @@
+package canvas;
+
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+public class WireMouseListener extends MouseAdapter {
+    private Canvas canvas;
+    private boolean isDrawingMode = false;
+    private Wire currentWire = null;
+    private JunctionPoint startJunction = null;
+
+    public WireMouseListener(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
+    public void setDrawingMode(boolean drawingMode) {
+        this.isDrawingMode = drawingMode;
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (isDrawingMode && e.getButton() == MouseEvent.BUTTON1) {
+            Point point = e.getPoint();
+            JunctionPoint clickedJunction = getClickedJunctionPoint(point);
+
+            if (clickedJunction != null) {
+                // Start a new wire or continue drawing
+                if (currentWire == null) {
+                    currentWire = new Wire();
+                    startJunction = clickedJunction;
+                } else {
+                    currentWire.addSegment(startJunction, clickedJunction);
+                    startJunction = clickedJunction;
+                }
+                canvas.repaint();
+            } else {
+                // Optionally, provide feedback if click is not on a JunctionPoint
+            }
+        }
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (isDrawingMode && e.getButton() == MouseEvent.BUTTON1 && currentWire != null) {
+            Point point = e.getPoint();
+            JunctionPoint clickedJunction = getClickedJunctionPoint(point);
+
+            if (clickedJunction != null) {
+                // Finish drawing the wire
+                currentWire.addSegment(startJunction, clickedJunction);
+                canvas.addWire(currentWire);
+
+                // Reset state
+                currentWire = null;
+                startJunction = null;
+                isDrawingMode = false;
+                canvas.resetCursor();
+            }
+            canvas.repaint();
+        }
+    }
+
+    private JunctionPoint getClickedJunctionPoint(Point point) {
+        for (JunctionBox junctionBox : canvas.getJunctionBoxes()) {
+            for (JunctionPoint junctionPoint : junctionBox.getJunctionPoints()) {
+                if (junctionPoint.contains(point)) {
+                    return junctionPoint;
+                }
+            }
+        }
+        return null;
+    }
+}

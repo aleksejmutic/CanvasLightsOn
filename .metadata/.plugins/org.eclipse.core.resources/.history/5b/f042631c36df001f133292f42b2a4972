@@ -1,0 +1,55 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class JunctionBox {
+    private int x, y, width, height;
+    private ArrayList<JunctionPoint> junctionPoints;
+
+    public JunctionBox(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.junctionPoints = new ArrayList<>();
+        
+        // Place junction points in the middle of each side of the rectangle
+        junctionPoints.add(new JunctionPoint(x + width / 2, y)); // Top-center
+        junctionPoints.add(new JunctionPoint(x + width, y + height / 2)); // Right-center
+        junctionPoints.add(new JunctionPoint(x + width / 2, y + height)); // Bottom-center
+        junctionPoints.add(new JunctionPoint(x, y + height / 2)); // Left-center
+    }
+
+    public void draw(Graphics2D g2d) {
+        // Draw the rectangle (Junction Box) with a white inside
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(x, y, width, height);
+        g2d.setColor(Color.BLACK); // Rectangle border
+        g2d.drawRect(x, y, width, height);
+        
+        // Draw a lightning symbol inside the box (Z-shaped lightning)
+        g2d.setColor(Color.YELLOW);
+        g2d.setStroke(new BasicStroke(3)); // Thicker line for the lightning
+        g2d.drawLine(x + width / 4, y + height / 4, x + width / 2, y + height / 2); // First line of the lightning
+        g2d.drawLine(x + width / 2, y + height / 2, x + 3 * width / 4, y + 3 * height / 4); // Second line of the lightning
+        
+        // Draw junction points
+        for (JunctionPoint point : junctionPoints) {
+            point.draw(g2d);
+        }
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+}
+
+

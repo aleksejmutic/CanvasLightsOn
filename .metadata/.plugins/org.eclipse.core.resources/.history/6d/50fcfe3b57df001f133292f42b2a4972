@@ -1,0 +1,114 @@
+package canvas;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class WireMouseListener extends MouseAdapter implements MouseMotionListener {
+    private Canvas canvas;
+    private boolean isDrawingMode = false;
+    private boolean isDrawingWire = false;
+    private Wire currentWire = null;
+    private JunctionPoint firstJunction = null;
+
+    public WireMouseListener(Canvas canvas) {
+        this.canvas = canvas;
+    }
+
+    public void setDrawingMode(boolean drawingMode) {
+        this.isDrawingMode = drawingMode;
+        if (!isDrawingMode) {
+            resetState();
+        }
+    }
+
+    public boolean isDrawingMode() {
+        return isDrawingMode;
+    }
+
+    public boolean isDrawingWire() {
+        return isDrawingWire;
+    }
+
+    public Wire getCurrentWire() {
+        return currentWire;
+    }
+
+    private void resetState() {
+        isDrawingWire = false;
+        currentWire = null;
+        firstJunction = null;
+        canvas.resetCursor();
+        canvas.repaint();
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (!isDrawingMode || e.getButton() != MouseEvent.BUTTON1) {
+            return;
+        }
+
+        Point clickPoint = e.getPoint();
+
+        JunctionPoint clickedJunctionPoint = getClickedJunctionPoint(clickPoint);
+        JunctionBox clickedJunctionBox = getClickedJunctionBox(clickPoint);
+
+        if (!isDrawingWire) {
+            // Start wire drawing only if clicked on a JunctionPoint
+            if (clickedJunctionPoint != null) {
+                isDrawingWire = true;
+                firstJunction = clickedJunctionPoint;
+                currentWire = new Wire(new Point(firstJunction.getX(), firstJunction.getY()));
+                // Add a placeholder point for mouse movement tracking
+                currentWire.addPoint(clickPoint);
+            }
+        } else {
+            if (clickedJunctionBox != null && clickedJunctionPoint == null) {
+                // Clicked on JunctionBox area (not on a JunctionPoint) - cancel wire
+                resetState();
+            } else if (clickedJunctionPoint != null && clickedJunctionPoint != firstJunction) {
+                // Clicked on a different JunctionPoint - end wire
+                currentWire.updateLastPoint(new Point(clickedJunctionPoint.getX(), clickedJunctionPoint.getY()));
+                canvas.addWire(currentWire);
+                resetState();
+            } else if (clickedJunctionPoint == firstJunction) {
+                // Clicked on the starting JunctionPoint - ignore or provide feedback
+            } else {
+                // Clicked elsewhere - add point to wire
+                currentWire.updateLastPoint(clickPoint);
+                // Prepare for next segment
+                currentWire.addPoint(clickPoint);
+            }
+            canvas.repaint();
+        }
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        if (isDrawingWire && currentWire != null) {
+            Point currentPoint = e.getPoint();
+            currentWire.updateLastPoint(currentPoint);
+            canvas.repaint();
+        }
+    }
+
+    private JunctionPoint getClickedJunctionPoint(Point point) {
+        for (JunctionBox junctionBox : canvas.getJunctionBoxes()) {
+            for (JunctionPoint junctionPoint : junctionBox.getJunctionPoints()) {
+                if (junctionPoint.contains(point)) {
+                    return junctionPoint;
+                }
+            }
+        }
+        return null;
+    }
+
+    private JunctionBox getClickedJunctionBox(Point point) {
+        for (JunctionBox junctionBox : canvas.getJunctionBoxes()) {
+            if (junctionBox.contains(point)) {
+                return junctionBox;
+            }
+        }
+        return null;
+    }
+}

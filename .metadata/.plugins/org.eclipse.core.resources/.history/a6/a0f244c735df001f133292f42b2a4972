@@ -1,0 +1,47 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class JunctionBox {
+    private int x, y, width, height;
+    private ArrayList<JunctionPoint> junctionPoints;
+
+    public JunctionBox(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.junctionPoints = new ArrayList<>();
+        
+        // Initialize junction points (dark dots at the corners)
+        junctionPoints.add(new JunctionPoint(x, y)); // Top-left
+        junctionPoints.add(new JunctionPoint(x + width, y)); // Top-right
+        junctionPoints.add(new JunctionPoint(x, y + height)); // Bottom-left
+        junctionPoints.add(new JunctionPoint(x + width, y + height)); // Bottom-right
+    }
+
+    public void draw(Graphics2D g2d) {
+        // Draw the rectangle (Junction Box)
+        g2d.setColor(Color.BLUE);
+        g2d.fillRect(x, y, width, height);
+        
+        // Draw the lightning symbol inside the box (simple representation)
+        g2d.setColor(Color.YELLOW);
+        g2d.drawLine(x + width / 2, y + height / 2, x + width / 2, y + height / 4); // Lightning line
+        
+        // Draw junction points
+        for (JunctionPoint point : junctionPoints) {
+            point.draw(g2d);
+        }
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+}
+

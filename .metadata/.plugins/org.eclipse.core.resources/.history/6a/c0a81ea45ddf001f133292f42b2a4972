@@ -1,0 +1,74 @@
+package canvas;
+
+import java.awt.*;
+import java.util.ArrayList;
+
+public class Wire {
+    private ArrayList<Point> points;
+    private JunctionPoint startJunction;
+    private JunctionPoint endJunction;
+
+    public Wire(JunctionPoint startJunction) {
+        this.startJunction = startJunction;
+        points = new ArrayList<>();
+        points.add(new Point(startJunction.getX(), startJunction.getY()));
+    }
+
+    public void addOrthogonalSegment(Point newPoint) {
+        if (points.isEmpty()) {
+            points.add(newPoint);
+            return;
+        }
+
+        Point lastPoint = points.get(points.size() - 1);
+
+        // Create horizontal-then-vertical path
+        Point intermediatePoint = new Point(newPoint.x, lastPoint.y);
+        points.add(intermediatePoint);
+        points.add(newPoint);
+    }
+
+    public void updateLastPoint(Point point) {
+        if (points.size() >= 2) {
+            points.set(points.size() - 1, point);
+            points.set(points.size() - 2, new Point(point.x, points.get(points.size() - 3).y));
+        } else if (!points.isEmpty()) {
+            points.set(points.size() - 1, point);
+        }
+    }
+
+    public void setEndJunction(JunctionPoint endJunction) {
+        this.endJunction = endJunction;
+        Point endPoint = new Point(endJunction.getX(), endJunction.getY());
+        updateLastPoint(endPoint);
+    }
+
+    public void updateIfConnected(JunctionBox movedBox) {
+        boolean updated = false;
+        if (startJunction != null && startJunction.getParentBox() == movedBox) {
+            points.set(0, new Point(startJunction.getX(), startJunction.getY()));
+            updated = true;
+        }
+        if (endJunction != null && endJunction.getParentBox() == movedBox) {
+            points.set(points.size() - 1, new Point(endJunction.getX(), endJunction.getY()));
+            updated = true;
+        }
+        if (updated) {
+            // Recalculate intermediate points if needed
+            // For simplicity, we're not adjusting internal points here
+        }
+    }
+
+    public void draw(Graphics g) {
+        g.setColor(Color.BLACK);
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point p1 = points.get(i);
+            Point p2 = points.get(i + 1);
+            g.drawLine(p1.x, p1.y, p2.x, p2.y);
+        }
+    }
+
+    public ArrayList<Point> getPoints() {
+        return points;
+    }
+}

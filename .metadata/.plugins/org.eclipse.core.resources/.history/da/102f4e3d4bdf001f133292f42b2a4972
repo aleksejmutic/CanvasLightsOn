@@ -1,0 +1,27 @@
+package canvas;
+
+import java.awt.*;
+
+public class JunctionPoint {
+    private int x, y;  // The coordinates for the junction point
+
+    public JunctionPoint(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    // Getters for the coordinates
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    // Method to draw the JunctionPoint
+    public void draw(Graphics g) {
+        g.setColor(Color.DARK_GRAY);  // Dark color for the dot
+        g.fillOval(x - 5, y - 5, 10, 10);  // Draw a small circle for the dot (5px radius)
+    }
+}

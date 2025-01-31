@@ -1,0 +1,38 @@
+package canvas;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public class CircuitEditor extends JFrame {
+    
+    public CircuitEditor() {
+        setTitle("Circuit Editor");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        
+        // Create top panel (with buttons)
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new FlowLayout(FlowLayout.LEFT)); // Align buttons to the left
+        
+        JButton drawJunctionBoxButton = new JButton("Draw Junction Box");
+        JButton drawConsumerButton = new JButton("Draw Consumer");
+        JButton drawCableButton = new JButton("Draw Cable");
+        
+        topPanel.add(drawResistorButton);
+        topPanel.add(drawCapacitorButton);
+        topPanel.add(clearButton);
+        
+        // Create drawing panel
+        DrawingPanel drawingPanel = new DrawingPanel();
+        
+        // Layout: topPanel at the NORTH, drawingPanel at the CENTER
+        setLayout(new BorderLayout());
+        add(topPanel, BorderLayout.NORTH);
+        add(drawingPanel, BorderLayout.CENTER);
+    }
+}

@@ -1,0 +1,57 @@
+package canvas;
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class DrawingPanel extends JPanel {
+    private ArrayList<JunctionBox> junctionBoxes;  // List to hold all junction boxes
+    private boolean drawingMode;  // Whether we are in drawing mode
+
+    public DrawingPanel() {
+        junctionBoxes = new ArrayList<>();
+        setPreferredSize(new Dimension(800, 600));
+
+        // Mouse listener to handle drawing the junction box
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (drawingMode) {
+                    // If in drawing mode, create a JunctionBox where the mouse was clicked
+                    int x = e.getX() - 50;  // Position the box to be centered on click
+                    int y = e.getY() - 75;
+                    int width = 100;
+                    int height = 150;
+
+                    // Create a new JunctionBox and add it to the list
+                    JunctionBox junctionBox = new JunctionBox(x, y, width, height);
+                    addJunctionBox(junctionBox);
+                }
+            }
+        });
+    }
+
+    // Method to add a new JunctionBox to the list
+    public void addJunctionBox(JunctionBox junctionBox) {
+        junctionBoxes.add(junctionBox);
+        repaint();  // Refresh the drawing to show the new junction box
+    }
+
+    // Method to toggle the drawing mode (enabled or disabled)
+    public void setDrawingMode(boolean drawingMode) {
+        this.drawingMode = drawingMode;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);  // Clear the canvas before redrawing
+
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Draw each junction box in the list
+        for (JunctionBox junctionBox : junctionBoxes) {
+            junctionBox.draw(g2d);
+        }
+    }
+}
