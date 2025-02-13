@@ -4,13 +4,13 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class WireMouseListener extends MouseAdapter implements MouseMotionListener {
-    private Canvas canvas;
+    private DiagramCanvas canvas;
     private boolean isDrawingMode = false;
     private boolean isDrawingWire = false;
     private Wire currentWire = null;
     private JunctionPoint firstJunction = null;
 
-    public WireMouseListener(Canvas canvas) {
+    public WireMouseListener(DiagramCanvas canvas) {
         this.canvas = canvas;
     }
 

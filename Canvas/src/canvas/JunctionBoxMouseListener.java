@@ -4,17 +4,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class JunctionBoxMouseListener extends MouseAdapter {
-    private Canvas canvas;
+    private DiagramCanvas canvas;
     private boolean isDrawing = false;
+    private JunctionBox selectedJunctionBox = null;
+    private SelectDecorator selectionDecorator = null;
 
-    // Image path within the src folder
-    private static final String IMAGE_PATH = "/images/flash.png"; // Adjust to your image's path
-
-    // Variables to store click coordinates
-    private int clickX;
-    private int clickY;
-
-    public JunctionBoxMouseListener(Canvas canvas) {
+    public JunctionBoxMouseListener(DiagramCanvas canvas) {
         this.canvas = canvas;
     }
 
@@ -28,50 +23,72 @@ public class JunctionBoxMouseListener extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (isDrawing && e.getButton() == MouseEvent.BUTTON1) {
-            // Capture click coordinates
-            clickX = e.getX();
-            clickY = e.getY();
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            Point clickPoint = e.getPoint();
 
-            int boxWidth = 100; // Width of the JunctionBox
-            int boxHeight = 50; // Height of the JunctionBox
+            // Check if a JunctionBox was clicked
+            JunctionBox clickedBox = getClickedJunctionBox(clickPoint);
 
-            // Check for overlap
-            if (isOverlappingExistingJunctionBox(clickX, clickY, boxWidth, boxHeight)) {
-                Toolkit.getDefaultToolkit().beep();
-            } else {
-                // Create the JunctionBox with the resource image path
-                JunctionBox junctionBox = new JunctionBox(clickX, clickY, boxWidth, boxHeight, IMAGE_PATH);
-                canvas.addJunctionBox(junctionBox);
-
-                // Send the coordinates to the model (pseudo-code, replace with actual model call)
-                // model.addJunctionBox(clickX, clickY);
+            if (clickedBox != null) {
+                toggleSelection(clickedBox);
+            } else if (isDrawing) {
+                drawNewJunctionBox(clickPoint);
             }
-            // Keep drawing mode active
         }
     }
 
-    // Method to check for overlap with existing JunctionBoxes
+    private void drawNewJunctionBox(Point clickPoint) {
+        int boxWidth = 100;
+        int boxHeight = 50;
+
+        if (isOverlappingExistingJunctionBox(clickPoint.x, clickPoint.y, boxWidth, boxHeight)) {
+            Toolkit.getDefaultToolkit().beep();
+        } else {
+            JunctionBox junctionBox = new JunctionBox(clickPoint, clickPoint, boxWidth, boxHeight);
+            canvas.addJunctionBox(junctionBox);
+            canvas.repaint();
+        }
+    }
+
+    
+    //Draws the decorated object, after it has been clicked on
+    private void toggleSelection(JunctionBox clickedBox) {
+        if (selectedJunctionBox == clickedBox) {
+            canvas.removeDecorator(selectionDecorator);
+            selectedJunctionBox = null;
+            selectionDecorator = null;
+        } else {
+            selectedJunctionBox = clickedBox;
+            selectionDecorator = new SelectDecorator(
+                clickedBox.getPoint(),
+                clickedBox.getEndPoint(),
+                clickedBox.getWidth(),
+                clickedBox.getHeight(),
+                clickedBox
+            );
+            canvas.addDecorator(selectionDecorator);
+        }
+        canvas.repaint();
+    }
+
+    private JunctionBox getClickedJunctionBox(Point point) {
+        for (JunctionBox box : canvas.getJunctionBoxes()) {
+            Rectangle bounds = new Rectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight());
+            if (bounds.contains(point)) {
+                return box;
+            }
+        }
+        return null;
+    }
+
     private boolean isOverlappingExistingJunctionBox(int x, int y, int width, int height) {
         Rectangle newBoxBounds = new Rectangle(x, y, width, height);
-        for (JunctionBox junctionBox : canvas.getJunctionBoxes()) {
-            Rectangle existingBoxBounds = new Rectangle(
-                junctionBox.getX(), junctionBox.getY(),
-                junctionBox.getWidth(), junctionBox.getHeight()
-            );
+        for (JunctionBox box : canvas.getJunctionBoxes()) {
+            Rectangle existingBoxBounds = new Rectangle(box.getX(), box.getY(), box.getWidth(), box.getHeight());
             if (newBoxBounds.intersects(existingBoxBounds)) {
                 return true;
             }
         }
         return false;
-    }
-
-    // Getter methods for click coordinates
-    public int getClickX() {
-        return clickX;
-    }
-
-    public int getClickY() {
-        return clickY;
     }
 }

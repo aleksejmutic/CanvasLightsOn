@@ -7,7 +7,7 @@ import java.util.*;
 public class PathFinder {
     private static final int OFFSET = 10;
 
-    public static ArrayList<Point> findPath(Point start, Point end, Canvas canvas) {
+    public static ArrayList<Point> findPath(Point start, Point end, DiagramCanvas canvas) {
         Queue<Point> queue = new LinkedList<>();
         Map<Point, Point> cameFrom = new HashMap<>();
         Set<Point> visited = new HashSet<>();
@@ -49,7 +49,7 @@ public class PathFinder {
         return neighbors;
     }
 
-    private static boolean doesSegmentIntersectObstacles(Point p1, Point p2, Canvas canvas) {
+    private static boolean doesSegmentIntersectObstacles(Point p1, Point p2, DiagramCanvas canvas) {
         Line2D line = new Line2D.Double(p1, p2);
         for (JunctionBox box : canvas.getJunctionBoxes()) {
             Rectangle2D boxBounds = new Rectangle2D.Double(box.getX(), box.getY(), box.getWidth(), box.getHeight());

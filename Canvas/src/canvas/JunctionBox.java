@@ -5,34 +5,61 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class JunctionBox {
-    private int x, y, width, height;
+public class JunctionBox extends Element {
     private Color color = Color.WHITE;
     private JunctionPoint[] junctionPoints;
+    private static final int OFFSET = 12; // Distance from the edge for connector points
+    private BufferedImage image;         // Image to display inside the JunctionBox
+    //private int id;    // Unique identifier
+    
+    
+    // Image path within the src folder
+    private static String imagePath = "/images/flash.png"; // Adjust to your image's path
+    
+    // Unique ID generation
+    private static int id = 0;
+    private static synchronized int generateUniqueId() {
+        return id++;
+    }
+    
+    private String type; 
+    private String name;
 
-    private static final int OFFSET = 10; // Distance from the edge
-
-    private BufferedImage image; // Image to display inside the JunctionBox
-    private int id; // Unique identifier
-
-    public JunctionBox(int x, int y, int width, int height, String imagePath) {
-        this.width = height; // Swap width and height for portrait orientation
-        this.height = width;
-        this.x = x;
-        this.y = y;
+    /**
+     * Constructs a JunctionBox.
+     * Note: The passed width and height are swapped to force portrait orientation.
+     *
+     * @param x         The x-coordinate of the top-left corner.
+     * @param y         The y-coordinate of the top-left corner.
+     * @param width     The width (this becomes the effective height).
+     * @param height    The height (this becomes the effective width).
+     * @param imagePath The resource path for the image (can be null).
+     */
+    public JunctionBox(Point point, Point endPoint, int width, int height) {
+        // Swap width and height for portrait orientation:
+        // effectiveWidth = height and effectiveHeight = width.
+        // Call super() as the very first statement.
+        super(point, endPoint, width, height);
+        
+        // Now assign the ID and update the name.
         this.id = generateUniqueId();
+        this.name = "JunctionBox" + this.id;
 
-        this.junctionPoints = new JunctionPoint[4];
+        // Initialize connector points.
+        junctionPoints = new JunctionPoint[4];
         initializeJunctionPoints();
 
-        loadImage(imagePath);
+        // Attempt to load the image.
+        loadImage();
     }
 
-    public JunctionBox(int x, int y, int width, int height) {
-        this(x, y, width, height, null);
-    }
 
-    private void loadImage(String imagePath) {
+    /**
+     * Loads the image from the specified path.
+     *
+     * @param imagePath The path to the image resource.
+     */
+    private void loadImage() {
         if (imagePath != null) {
             try {
                 image = ImageIO.read(getClass().getResourceAsStream(imagePath));
@@ -48,51 +75,62 @@ public class JunctionBox {
         }
     }
 
+    /**
+     * Initializes the four JunctionPoints around the box.
+     */
     private void initializeJunctionPoints() {
-        // Assign unique IDs to the JunctionPoints
         for (int i = 0; i < 4; i++) {
             int jpX = 0, jpY = 0;
             switch (i) {
                 case 0: // Top
-                    jpX = x + width / 2;
-                    jpY = y - OFFSET;
+                    jpX = point.x + width / 2;
+                    jpY = point.y - OFFSET;
                     break;
                 case 1: // Right
-                    jpX = x + width + OFFSET;
-                    jpY = y + height / 2;
+                    jpX = point.x + width + OFFSET;
+                    jpY = point.y + height / 2;
                     break;
                 case 2: // Bottom
-                    jpX = x + width / 2;
-                    jpY = y + height + OFFSET;
+                    jpX = point.x + width / 2;
+                    jpY = point.y + height + OFFSET;
                     break;
                 case 3: // Left
-                    jpX = x - OFFSET;
-                    jpY = y + height / 2;
+                    jpX = point.x - OFFSET;
+                    jpY = point.y + height / 2;
                     break;
             }
             junctionPoints[i] = new JunctionPoint(jpX, jpY);
             junctionPoints[i].setParentBox(this);
-            // JunctionPoint IDs are assigned in their constructor
         }
     }
 
-    public boolean contains(Point point) {
-        Rectangle bounds = new Rectangle(x, y, width, height);
-        return bounds.contains(point);
+    /**
+     * Checks if a given point is within the bounds of the JunctionBox.
+     *
+     * @param p the point to test.
+     * @return true if the point is inside the box; false otherwise.
+     */
+    public boolean contains(Point p) {
+        Rectangle bounds = new Rectangle(point.x, point.y, width, height);
+        return bounds.contains(p);
     }
 
     public JunctionPoint[] getJunctionPoints() {
         return junctionPoints;
     }
 
+    /**
+     * Draws the JunctionBox including its border, image (if available), connector lines, and the JunctionPoints.
+     *
+     * @param g the Graphics context.
+     */
     public void draw(Graphics g) {
-        // Draw the JunctionBox border
+        // Draw the box border.
         g.setColor(Color.BLACK);
-        g.drawRect(x, y, width, height);
+        g.drawRect(point.x, point.y, width, height);
 
-        // Draw the image or default fill
+        // Draw the image if available; otherwise, fill with the default color.
         if (image != null) {
-            // Maintain aspect ratio
             int imgWidth = image.getWidth();
             int imgHeight = image.getHeight();
             double imgAspect = (double) imgWidth / imgHeight;
@@ -100,54 +138,61 @@ public class JunctionBox {
 
             int drawWidth, drawHeight;
             if (imgAspect > boxAspect) {
-                // Image is wider
                 drawWidth = width - 2;
                 drawHeight = (int) (drawWidth / imgAspect);
             } else {
-                // Image is taller
                 drawHeight = height - 2;
                 drawWidth = (int) (drawHeight * imgAspect);
             }
 
-            int drawX = x + (width - drawWidth) / 2 + 1;
-            int drawY = y + (height - drawHeight) / 2 + 1;
-
+            int drawX = point.x + (width - drawWidth) / 2 + 1;
+            int drawY = point.y + (height - drawHeight) / 2 + 1;
             g.drawImage(image, drawX, drawY, drawWidth, drawHeight, null);
         } else {
-            // Default fill
             g.setColor(color);
-            g.fillRect(x + 1, y + 1, width - 1, height - 1);
+            g.fillRect(point.x + 1, point.y + 1, width - 1, height - 1);
         }
 
-        // Draw connector lines to JunctionPoints
+        // Draw connector lines to each JunctionPoint.
         g.setColor(Color.BLACK);
-        // Top
-        g.drawLine(x + width / 2, y, junctionPoints[0].getX(), junctionPoints[0].getY());
-        // Right
-        g.drawLine(x + width, y + height / 2, junctionPoints[1].getX(), junctionPoints[1].getY());
-        // Bottom
-        g.drawLine(x + width / 2, y + height, junctionPoints[2].getX(), junctionPoints[2].getY());
-        // Left
-        g.drawLine(x, y + height / 2, junctionPoints[3].getX(), junctionPoints[3].getY());
+        g.drawLine(point.x + width / 2, point.y, junctionPoints[0].getX(), junctionPoints[0].getY());
+        g.drawLine(point.x + width, point.y + height / 2, junctionPoints[1].getX(), junctionPoints[1].getY());
+        g.drawLine(point.x + width / 2, point.y + height, junctionPoints[2].getX(), junctionPoints[2].getY());
+        g.drawLine(point.x, point.y + height / 2, junctionPoints[3].getX(), junctionPoints[3].getY());
 
-        // Draw JunctionPoints
-        for (JunctionPoint point : junctionPoints) {
-            point.draw(g);
+        // Draw each JunctionPoint.
+        for (JunctionPoint jp : junctionPoints) {
+            jp.draw(g);
         }
     }
-
-    // Getter methods
-    public int getX() { return x; }
-    public int getY() { return y; }
-    public int getWidth() { return width; }
-    public int getHeight() { return height; }
-
-    public int getId() { return id; }
-
-    // Unique ID generation
-    private static int nextId = 0;
-
-    private static synchronized int generateUniqueId() {
-        return nextId++;
+    
+ // Add the getBounds method to return a Rectangle representing the bounding box of the JunctionBox
+    public Rectangle getBounds() {
+        return new Rectangle(point.x, point.y, width, height);
     }
+
+    // Optional convenience getter methods.
+    public int getX() {
+        return point.x;
+    }
+
+    public int getY() {
+        return point.y;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
+	}
+    
+    
 }
