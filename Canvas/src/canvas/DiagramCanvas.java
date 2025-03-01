@@ -26,6 +26,22 @@ public class DiagramCanvas extends JPanel {
         junctionBoxes = new ArrayList<>();
         wires = new ArrayList<>();
         selectionDecorators = new ArrayList<>(); // Initialize selectionDecorators list
+        
+        //kod koji dodaje elemente na canvas bez crtanja(proba)
+        JunctionBox box1 = new JunctionBox(new Point(100, 100), new Point(150, 150), 50, 50);
+        JunctionBox box2 = new JunctionBox(new Point(300, 200), new Point(350, 150), 50, 50);
+        addJunctionBox(box1);
+        addJunctionBox(box2);
+        
+        JunctionPoint startJunction = box1.getJunctionPoints()[0]; // Assuming it has at least one point
+        JunctionPoint endJunction = box2.getJunctionPoints()[0];   // Same assumption
+        
+        Wire wire = new Wire(startJunction, this);
+        wire.setEndJunction(endJunction);
+        addWire(wire);
+        
+        //ovdje se zavrsava ta proba, jako bitno!!!
+        
         setFocusable(true);
         
         addMouseListener(new MouseAdapter() {
@@ -132,6 +148,8 @@ public class DiagramCanvas extends JPanel {
         repaint(); // Repaint to update the canvas
     }
 
+    
+    //Metoda koja prati stanje svih elemenata na canvasu, kada god se promjeni niz elemenata, poziva se repaint koji indirektno poziva paintComponent
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

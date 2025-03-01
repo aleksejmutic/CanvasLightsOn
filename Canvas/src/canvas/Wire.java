@@ -18,6 +18,11 @@ public class Wire extends Conductor {
     private JunctionPoint endJunction;
     // A reference to the canvas for obstacle checking (assumes canvas provides getJunctionBoxes()).
     private DiagramCanvas canvas;
+    
+    private static int id = 0;
+  
+    
+    private String name = "Wire ";
 
     /**
      * Constructs a new Wire given a starting JunctionPoint and a Canvas.
@@ -28,6 +33,9 @@ public class Wire extends Conductor {
         super(new Point(startJunction.getX(), startJunction.getY()),
               new Point(startJunction.getX(), startJunction.getY()),
               0, 0);
+        id++;
+        this.name += this.id;
+        System.out.println(toString());
         this.startJunction = startJunction;
         this.canvas = canvas;
         this.points = new ArrayList<>();
@@ -42,6 +50,8 @@ public class Wire extends Conductor {
      */
     public Wire(Point point, Point endPoint, int width, int height) {
         super(point, endPoint, width, height);
+        id++;
+        System.out.println(toString());
         this.points = new ArrayList<>();
         this.userDefinedPoints = new ArrayList<>();
         points.add(point);
@@ -57,6 +67,8 @@ public class Wire extends Conductor {
         recalculatePath();
     }
     
+    
+    //desava se replacement, vidjeti da li to uopste treba da se desava!!!
     public void updateLastPoint(Point point) {
         if (!points.isEmpty()) {
             points.set(points.size() - 1, point);
@@ -230,10 +242,18 @@ public class Wire extends Conductor {
             Point prev = points.get(0);
             for (int i = 1; i < points.size(); i++) {
                 Point curr = points.get(i);
+                //prikazivanje tacaka!!!
+                System.out.println(curr.x + " " + curr.y);
                 g.drawLine(prev.x, prev.y, curr.x, curr.y);
                 prev = curr;
             }
         }
+    }
+    
+    @Override
+    public String toString() {
+		return name;
+    	
     }
     
     // --- Getter Methods ---

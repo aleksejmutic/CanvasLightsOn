@@ -23,7 +23,7 @@ public class JunctionBox extends Element {
     }
     
     private String type; 
-    private String name;
+    private String name = "JunctionBox ";
 
     /**
      * Constructs a JunctionBox.
@@ -42,8 +42,8 @@ public class JunctionBox extends Element {
         super(point, endPoint, width, height);
         
         // Now assign the ID and update the name.
-        this.id = generateUniqueId();
-        this.name = "JunctionBox" + this.id;
+        id++;
+        this.name += this.id;
 
         // Initialize connector points.
         junctionPoints = new JunctionPoint[4];
